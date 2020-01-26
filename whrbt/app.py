@@ -1,16 +1,24 @@
 # -*-coding:utf-8-*-
 from werobot import WeRoBot
 import re
+from werobot.client import Client as InformationClient #消息类
+from redis_connect import Connect
 
-from .redis_connect import Connect
-
-client=Connect(host="localhost",port=6379)
-
+r=Connect(host="localhost",port=6379)
+APP_ID=""
+APP_SECRET=""
 class customService:
     """
     客服服务，回复消息，根据city获取用户id，并发送
     """
-    pass
+    def __init__(self,APP_ID,APP_SECRET):
+        config={"APP_ID":APP_ID,"APP_SECRET":APP_SECRET}
+        self.client=InformationClient(config)
+    def addCustomServiceAccount(self,account,nickname,password):
+        self.client.add_custom_service_account(account,nickname,password)
+    def 
+    
+    
 class redisToMysql:
     """
     将redis的内容每过一段时间更新进mysql
@@ -23,10 +31,10 @@ def echo(message):
     sub_city = re.compile("sub(.*)")
     pop_city=re.compile("pop(.*)")
     if sub_city:
-        client.addUser(sub_city,wechat_id)
+        r.addUser(sub_city,wechat_id)
         return "订阅成功"
     if pop_city:
-        client.deleteUser(pop_city,wechat_id)
+        r.deleteUser(pop_city,wechat_id)
         return "删除成功"
     return ""
 
