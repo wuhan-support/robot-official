@@ -16,7 +16,8 @@ class customService:
         self.client=InformationClient(config)
     def addCustomServiceAccount(self,account,nickname,password):
         self.client.add_custom_service_account(account,nickname,password)
-    def 
+    def sendTextMessage(self,user_id,content):
+        self.client.send_text_message(user_id,content)
     
     
 class redisToMysql:
