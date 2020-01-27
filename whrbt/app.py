@@ -18,12 +18,15 @@ class customService:
         self.client.add_custom_service_account(account,nickname,password)
     def sendTextMessage(self,user_id,content):
         self.client.send_text_message(user_id,content)
+    def sendTemplateMessage(self,user_id,template_id,data,url=''):
+        self.client.send_template_message(user_id,template_id,data,url)
     
     
 class redisToMysql:
     """
     将redis的内容每过一段时间更新进mysql
     """
+
     pass
 
 @robot.text
