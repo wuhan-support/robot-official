@@ -4,7 +4,7 @@ from werobot.client import Client as InformationClient #消息类
 
 from config import *
 from redis_connect import Connect
-from db_connect import *
+from sqlite_connect import SQLiteConnect
 
 
 # 初始化
