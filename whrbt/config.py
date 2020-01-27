@@ -9,6 +9,9 @@ ROBOT_PORT = 8000
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 
+# SQLite 配置
+DB_FILE = 'feiyan.db'
+
 # App ID 及 secret
 APP_ID = ""
 APP_SECRET = ""
