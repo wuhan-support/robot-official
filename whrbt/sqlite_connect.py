@@ -62,7 +62,6 @@ class SQLiteConnect:
         
         query = db.insert(self.cities)
         self.conn.execute(query, insert_data)
-            
 
     def _get_all_cities(self):
         '''获取包含所有中国城市名称的列表'''
@@ -75,16 +74,79 @@ class SQLiteConnect:
             return []
 
         return [city_data for city_id, city_data in data.items()]
+    
+    def _get_city_id(self, city_name):
+        '''获取指定城市名称在数据库中的ID'''
+        # TODO: perhaps add fuzzy search?
+        query = db.select([self.cities]).where(
+            db.or_(
+                self.cities.columns.abbr == city_name,
+                self.cities.columns.name == city_name
+            )
+        )
+        result_proxy = self.conn.execute(query)
+        result = result_proxy.fetchone() # TODO: 处理城市重名情况
+        if len(result) < 1:
+            # 未找到城市名
+            return -1
+        city_id = result[0]
+        return city_id
 
     def save_subscription(self, uid, city):
         '''保存一个用户对于制定城市的订阅'''
-        pass
+        # TODO: add feedback for invalid input
+        city_id = self._get_city_id(city)
+        if city_id == -1:
+            return -1
+
+        # 插入数据
+        query = db.insert(self.subscriptions).values(uid=uid, city_id=city_id)
+        self.conn.execute(query)
+
+        return 0
+
 
     def cancel_subscription(self, uid, city):
         '''取消一个用户对于指定城市的订阅'''
-        pass
+        # TODO: add feedback for invalid input
+        city_id = self._get_city_id(city)
+        if city_id == -1:
+            return -1
+        
+        # 检查是否存在这一订阅
+        query = db.select([self.subscriptions]).where(
+            db.and_(
+                self.subscriptions.columns.uid == uid,
+                self.subscriptions.columns.city_id == city_id
+            )
+        )
+        result_proxy = self.conn.execute(query)
+        result = result_proxy.fetchone()
+        if not result:
+            # 不存在这一订阅
+            return -1 # TODO: Have a better and more consistent return code system
+
+        # 删除数据
+        # TODO: 这里一定要query两遍吗？
+        query = db.delete(self.subscriptions).where(
+            db.and_(
+                self.subscriptions.columns.uid == uid,
+                self.subscriptions.columns.city_id == city_id
+            )
+        )
+        self.conn.execute(query)
+
+        return 0
 
     def get_subscribed_users(self, city):
         '''获取所有订阅指定城市的用户'''
-        db.select([self.cities]).where(self.cities.columns.name == city)
-        db.select([self.subscriptions]).where(self.subscriptions.columns.sex == 'F')
+        # TODO: add feedback for invalid input
+        city_id = self._get_city_id(city)
+        if city_id == -1:
+            return -1
+        
+        query = db.select([self.subscriptions]).where(self.subscriptions.columns.city_id == city_id)
+        result_proxy = self.conn.execute(query)
+        results = result_proxy.fetchall()
+
+        return [sub[1] for sub in results]
