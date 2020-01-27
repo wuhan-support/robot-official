@@ -13,3 +13,5 @@ class Connect:
 
     def deleteUser(self, city, wechat_id):
         self.r.srem(city, wechat_id)
+    def getData(self,city):
+        return self.r.smembers(city)
