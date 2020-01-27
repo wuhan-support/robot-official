@@ -15,3 +15,5 @@ class Connect:
         self.r.srem(city, wechat_id)
     def getData(self,city):
         return self.r.smembers(city)
+    def getAllKeys(self):
+        return self.r.keys()

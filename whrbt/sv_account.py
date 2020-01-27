@@ -41,29 +41,45 @@ class CustomService:
     def send_template_message(self, user_id, template_id, data, url=""):
         self.client.send_template_message(user_id,template_id, data, url)
 
+def updateData(old_series,new_series):
+    print("*"*10)
+    print(new_series)
+    print("*"*10)
+    print(old_series)
+    return old_series[old_series!=new_series]
 
+old_series=pushData()
+r=Connect()
 while True:
     time.sleep(10+10*random.random())
-    city="武汉"
-    series=pushData()
-    data=series[city]
-    r=Connect()
+    new_series=pushData()
+    update_series=updateData(old_series,new_series)
+    if len(update_series)>=1:
+        old_series=new_series
+    all_keys=set(map(lambda x:x.decode(),r.getAllKeys()))
+    co_cities=set(update_series.index)&set(all_keys)
+    # co_cities=all_keys#待注释
+    print(all_keys)
+    print(set(update_series.index))
+    print(co_cities)
+    # update_series=new_series#待注释
     client=CustomService(APP_ID,APP_SECRET)
-    
-    for wechat_id in r.getData(city.encode()):
-        Data={
-                    "Data":{
-                        "value":data,
-                        "color":"#173177"
-                    },
-                    "Date":{
-                        "value":datetime.datetime.now().strftime("%Y%m%d %H:%M:%S"),
-                        "color":"#173177"
-                    },
-                    "City":{
-                        "value":city,
-                        "color":"#173177"
-                    }
-        }
-        client.send_template_message(wechat_id,TEMPLATE_ID,Data)    
-    
+    for city in co_cities:
+        data=update_series[city]
+        for wechat_id in r.getData(city):
+            Data={
+                        "Data":{
+                            "value":data,
+                            "color":"#173177"
+                        },
+                        "Date":{
+                            "value":datetime.datetime.now().strftime("%Y%m%d %H:%M:%S"),
+                            "color":"#173177"
+                        },
+                        "City":{
+                            "value":city,
+                            "color":"#173177"
+                        }
+            }
+            client.send_template_message(wechat_id,TEMPLATE_ID,Data)    
+        
