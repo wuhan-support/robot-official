@@ -54,5 +54,5 @@ def account_subcribe():
 
 if __name__=="main":
     
-    robot = WeRoBot(token="ye980226")
+    robot = WeRoBot(token="")
     robot.run("auto", port=8000)
