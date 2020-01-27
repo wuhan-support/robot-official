@@ -1,12 +1,30 @@
 import re
 from werobot import WeRoBot
 from werobot.client import Client as InformationClient #消息类
-
+import pandas as pd
+import glob
 from config import *
 from redis_connect import Connect
 from db_connect import *
+import os
+import json2csv_realtime
 
-
+def pushData():
+    list=[]
+    for i in os.listdir('jsons/'):
+        if i.split('.')[ 0]!='latest':
+            if i.split('.')[ 1 ]!='json':
+                timestamp = float(i.split('.')[ 0 ]+'.'+i.split('.')[ 1 ])
+                list.append(timestamp)
+    a=max(list)
+    realtime_name=str(a)+'.json'
+    json2csv_realtime.save_csv_area(realtime_name)
+         
+    df=pd.read_csv("csvs/real_time.csv",encoding="gbk")
+    df=df.set_index("city")
+    df=df.applymap(lambda x:str(x))
+    series="confirmed:"+df["confirmed"]+" suspected:"+df["suspected"]+" cured:"+df["cured"]+" dead:"+df["dead"]
+    return series
 # 初始化
 r = Connect(host=REDIS_HOST, port=REDIS_PORT)
 
