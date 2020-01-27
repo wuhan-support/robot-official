@@ -35,13 +35,8 @@ def reply_text(message):
         return "订阅成功"
     pop_city =re.search("pop:(.*)", message.content)
     if pop_city:
-<<<<<<< HEAD
-        pop_city=pop_city.group(1)
-        r.deleteUser(pop_city, wechat_id)
-=======
         pop_city = pop_city.group(1)
-        r.deleteUser(pop_city.encode(), wechat_id)
->>>>>>> aba6ffee6ab1c877e3a2ca35bf447f56f9609ef3
+        r.deleteUser(pop_city, wechat_id)
         return "删除成功"
     return ""
 

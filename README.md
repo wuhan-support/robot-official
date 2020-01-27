@@ -11,14 +11,17 @@
 
 连接服务号并接收回调信息
 > python app.py
+
 ### 数据库
-计划使用redis和sqlite
+计划使用 Redis 以及 SQLite
+
 ### 具体使用
 搜索微信公众号测试版，申请账号，并配置
 
-config.py中填入TEMPLATE_ID，APP_ID,SECRET_ID
+`config.py` 中填入 `TEMPLATE_ID`, `APP_ID`, `SECRET_ID`
 
 个人微信号机器人很快上线
+
 ### 计划
 - [x] 与疫情数据接入（dataset仓库）
 - [ ] 与其他信息接入（人工收集）  
