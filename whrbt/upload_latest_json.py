@@ -4,7 +4,7 @@ import time
 import os
 import requests
 from log_support import LogSupport
-import json2csv_realtime
+import pandas as pd
 # 初始化日志
 ls = LogSupport()
 def load_response():
@@ -103,7 +103,7 @@ class Data(object):
             self.on_update()
 
     def on_update(self):
-        write_json('./jsons/{}.json'.format(self.time_stamp), self.response)
+        # write_json('./jsons/{}.json'.format(self.time_stamp), self.response)
         write_json('./jsons/latest.json', self.response)
         for func in self.on_updates:
             try:
@@ -139,14 +139,13 @@ class City(object):
         self.cured = city_stat['cured']
         self.dead = city_stat['dead']
 
-
-
-    pass
-if __name__ == "__main__":
+def main():
     data = Data(p)
     while True:
         time.sleep(5 + 10 * random.random())
         response = load_response()
         if response['data']['listByArea'] != data.response['data']['listByArea']:
             data.update()
-            
+
+if __name__=="main":
+    main()

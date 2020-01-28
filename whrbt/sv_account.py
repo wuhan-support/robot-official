@@ -4,8 +4,9 @@ import random
 import datetime
 
 import pandas as pd
-
-import json2csv_realtime
+from dispose_data import *
+from upload_latest_json import  main as update_latest_data
+import threading
 from werobot.client import Client as InformationClient # 消息类
 from db_connect import RedisConnect,SQLiteConnect
 from config import APP_ID, APP_SECRET, TEMPLATE_ID
@@ -31,76 +32,80 @@ class CustomService:
 
 
 def pushData():
-    tmp_list = []
-    for i in os.listdir('jsons/'):
-        if i.split('.')[0] != 'latest':
-            if i.split('.')[1] != 'json':
-                timestamp = float(i.split('.')[0]+'.'+i.split('.')[1])
-                tmp_list.append(timestamp)
-    a = max(tmp_list)
-    realtime_name = str(a)+'.json'
-    json2csv_realtime.save_csv_area(realtime_name)
-
-    df = pd.read_csv("csvs/real_time.csv", encoding="gbk")
-    df = df.set_index("city")
-    df = df.applymap(lambda x: str(x))
-    series = "confirmed:" + df["confirmed"] + " suspected:" + \
-        df["suspected"] + " cured:" + df["cured"] + " dead:" + df["dead"]
+    df=get_latest_data()
+    df=df.applymap(lambda x: str(x))
+    df=df.set_index("city")
+    series = "确诊:" + df["confirmed"] + " 治愈:" + df["cured"] + " 死亡:" + df["dead"]
     return series
 
 
 def updateData(old_series, new_series):
-    print("*" * 10)
-    print(new_series)
-    print("*" * 10)
-    print(old_series)
-    update_list=[]
-    old_cities=set(old_series.index)
-    new_cities=set(new_series.index)
-    diff_cities=new_cities-old_cities
-    if len(diff_cities)>0:
-        update_list.extend(diff_cities)
-        
-    update_cities=(old_series[old_series != (new_series[old_cities])]).index
-    if len(update_cities)>0:
-        update_list.extend(update_cities)
-    if len(update_cities)>0:
-        return new_series[update_cities]
-    else:
-        return pd.Series()
+    try:
+        print("*" * 10)
+        print(new_series)
+        print("*" * 10)
+        print(old_series)
+        update_list=[]
+        old_cities=old_series.index
+        new_cities=new_series.index
+        diff_cities=list(set(new_cities)-set(old_cities))
+        print("ln"*10)
+        print(old_series)
+        flag_list=(old_series!=new_series[old_cities]).values
+        print("1"*10)
+        print(flag_list)
+        if len(diff_cities)>0:
+            update_list.extend(diff_cities)
+        update_cities=(old_series[flag_list]).index
+        print("ln1"*10)
+        if len(update_cities)>0:
+            update_list.extend(update_cities)
+        print("eo"*10)
+        print(update_cities)
+        if len(update_cities)>0:
+            return new_series[update_cities]
+        else:
+            return pd.Series()
+    except :
+        os.system("")
 
-old_series = pushData()
-r = RedisConnect()
+def main():
+    old_series = pushData()
+    r = RedisConnect()
 
-while True:
-    time.sleep(10 + 10 * random.random())
-    new_series = pushData()
-    update_series = updateData(old_series, new_series)
-    if len(update_series) >= 1:
-        old_series = new_series
-    all_keys = set(map(lambda x: x.decode(), r.get_all_keys()))
-    co_cities = set(update_series.index) & set(all_keys)
-    # co_cities=all_keys #待注释
-    print(all_keys)
-    print(set(update_series.index))
-    print(co_cities)
-    # update_series=new_series #待注释
-    client = CustomService(APP_ID, APP_SECRET)
-    for city in co_cities:
-        data = update_series[city]
-        for wechat_id in r.get_subscribed_users(city):
-            Data = {
-                "Data": {
-                    "value": data,
-                    "color": "#173177"
-                },
-                "Date": {
-                    "value": datetime.datetime.now().strftime("%Y%m%d %H:%M:%S"),
-                    "color": "#173177"
-                },
-                "City": {
-                    "value": city,
-                    "color": "#173177"
+    while True:
+        time.sleep(10 + 10 * random.random())
+        new_series = pushData()
+        update_series = updateData(old_series, new_series)
+        if len(update_series) >= 1:
+            old_series = new_series
+        all_keys = set(r.get_all_keys())
+        print(all_keys)
+        co_cities = set(update_series.index) & set(all_keys)
+        # co_cities=all_keys #待注释
+        print(all_keys)
+        print(set(update_series.index))
+        print(co_cities)
+        # update_series=new_series #待注释
+        client = CustomService(APP_ID, APP_SECRET)
+        for city in co_cities:
+            data = update_series[city]
+            for wechat_id in r.get_subscribed_users(city):
+                Data = {
+                    "Data": {
+                        "value": data,
+                        "color": "#173177"
+                    },
+                    "Date": {
+                        "value": datetime.datetime.now().strftime("%Y%m%d %H:%M:%S"),
+                        "color": "#173177"
+                    },
+                    "City": {
+                        "value": city,
+                        "color": "#173177"
+                    }
                 }
-            }
-            client.send_template_message(wechat_id, TEMPLATE_ID, Data)
+                client.send_template_message(wechat_id, TEMPLATE_ID, Data)
+
+threading.Thread(target=update_latest_data).start()#更新数据
+main()

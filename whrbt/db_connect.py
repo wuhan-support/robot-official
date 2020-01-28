@@ -159,12 +159,14 @@ class RedisConnect:
     Redis 接口封装类
     """
     def __init__(self, host="localhost", port=6379, password=None):
-        self.r = redis.Redis(host=host, port=port, password=password)
+        self.r = redis.Redis(host=host, port=port,decode_responses=True, password=password)
 
     def save_subscription(self, uid, city):
         self.r.sadd(city,uid)
 
     def cancel_subscription(self, uid, city):
+        print(city)
+        print(uid)
         self.r.srem(city, uid)
     
     def get_subscribed_users(self, city):

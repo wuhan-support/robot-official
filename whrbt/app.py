@@ -2,11 +2,11 @@ import os
 import re
 import glob
 from werobot import WeRoBot
-import json2csv_realtime
 from config import *
 from db_connect import RedisConnect,SQLiteConnect
-
-
+import json
+import pandas as pd
+from dispose_data import *
 # 初始化
 robot = WeRoBot(token=TOKEN)
 r = RedisConnect(host=REDIS_HOST, port=REDIS_PORT)
@@ -24,19 +24,52 @@ class RedisToMySQL:
 def reply_text(message):
     wechat_id = message.source
     print(message.content)
-    sub_city = re.search("sub:(.*)",message.content)
-    if sub_city:
-        sub_city = sub_city.group(1)
-        print(sub_city)
-        r.save_subscription(wechat_id,sub_city)
-        return "订阅成功"
-    pop_city =re.search("pop:(.*)", message.content)
-    if pop_city:
-        pop_city = pop_city.group(1)
-        r.cancel_subscription(wechat_id,pop_city)
-        return "删除成功"
-    return ""
-
+    data_df=get_latest_data()
+    all_city=get_all_city(data_df)
+    pro_to_city=transfer_pro_to_ct(data_df)
+    pros=pro_to_city.index
+    sub = re.search("订阅(.*)",message.content)
+    can =re.search("取消(.*)", message.content)
+    if sub or can:
+            
+        if sub:
+            sub = sub.group(1)
+            print(sub)
+            if sub in pros:
+                for s in pro_to_city["city"][sub].split():
+                    r.save_subscription(wechat_id,s)
+                return "订阅成功%s"%(sub)
+            elif sub=="全国":
+                for s in all_city:
+                    r.save_subscription(wechat_id,s)
+                return "订阅成功%s"%(sub)
+            elif sub in all_city:
+                
+                r.save_subscription(wechat_id,sub)
+                return "订阅成功%s"%(sub)
+            
+            else:
+                return "暂无该地区无法完成订阅"
+            
+        if can:
+            can = can.group(1)
+            print(can)
+            if can in pros:
+                for c in pro_to_city["city"][can].split():
+                    print(c)
+                    r.cancel_subscription(wechat_id,c)
+                return "取消成功%s"%(can)    
+            elif can=="全国":
+                for c in all_city:
+                    r.cancel_subscription(wechat_id,c)
+                return "取消成功%s"%(can)
+            elif can in all_city:
+                r.cancel_subscription(wechat_id,can)
+                return "取消成功%s"%(can)
+            else:
+                return "无法取消"
+                
+    return "输入有误，请重新输入"
 
 # 订阅消息处理句柄
 @robot.subscribe

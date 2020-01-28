@@ -1,0 +1,33 @@
+2020-01-28 16:13:10,898 log_support.py[line:36] INFO -init logging module success
+2020-01-28 16:13:38,493 log_support.py[line:36] INFO -init logging module success
+2020-01-28 19:59:00,995 log_support.py[line:36] INFO -init logging module success
+2020-01-28 19:59:49,664 upload_latest_json.py[line:33] ERROR json load failed, waiting for around 15 seconds
+2020-01-28 19:59:49,665 upload_latest_json.py[line:34] ERROR 'data'
+Traceback (most recent call last):
+  File "C:\Users\Administrator.XB-20191227BPBU\Desktop\robot\whrbt\upload_latest_json.py", line 28, in load_response
+    if not response['data']['listByArea']:
+KeyError: 'data'
+2020-01-28 20:00:06,907 upload_latest_json.py[line:33] ERROR json load failed, waiting for around 15 seconds
+2020-01-28 20:00:06,907 upload_latest_json.py[line:34] ERROR 'data'
+Traceback (most recent call last):
+  File "C:\Users\Administrator.XB-20191227BPBU\Desktop\robot\whrbt\upload_latest_json.py", line 28, in load_response
+    if not response['data']['listByArea']:
+KeyError: 'data'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Administrator.XB-20191227BPBU\Desktop\robot\whrbt\upload_latest_json.py", line 28, in load_response
+    if not response['data']['listByArea']:
+KeyError: 'data'
+2020-01-28 20:00:18,244 log_support.py[line:36] INFO -init logging module success
+2020-01-28 20:00:22,668 upload_latest_json.py[line:30] INFO json loaded at time 2020-01-28 20:00:22
+2020-01-28 20:00:22,668 upload_latest_json.py[line:91] INFO data constructed
+2020-01-28 20:00:22,669 upload_latest_json.py[line:102] INFO data updated at 1580212822.6680546
+2020-01-28 20:00:36,057 upload_latest_json.py[line:30] INFO json loaded at time 2020-01-28 20:00:36
+2020-01-28 20:00:49,538 upload_latest_json.py[line:30] INFO json loaded at time 2020-01-28 20:00:49
+2020-01-28 20:01:01,595 upload_latest_json.py[line:30] INFO json loaded at time 2020-01-28 20:01:01
+2020-01-28 20:01:10,072 upload_latest_json.py[line:30] INFO json loaded at time 2020-01-28 20:01:10
+2020-01-28 20:01:23,390 upload_latest_json.py[line:30] INFO json loaded at time 2020-01-28 20:01:23
+2020-01-28 20:01:35,036 upload_latest_json.py[line:30] INFO json loaded at time 2020-01-28 20:01:35
+2020-01-28 20:01:44,200 upload_latest_json.py[line:30] INFO json loaded at time 2020-01-28 20:01:44
