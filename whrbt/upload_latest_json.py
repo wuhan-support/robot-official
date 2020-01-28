@@ -139,7 +139,7 @@ class City(object):
         self.cured = city_stat['cured']
         self.dead = city_stat['dead']
 
-def main():
+def update_latest_data():
     data = Data(p)
     while True:
         time.sleep(5 + 10 * random.random())
@@ -148,4 +148,4 @@ def main():
             data.update()
 
 if __name__=="main":
-    main()
+    update_latest_data()

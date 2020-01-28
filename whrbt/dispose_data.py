@@ -1,6 +1,6 @@
 import json
 import pandas as pd
-from upload_latest_json import main
+# from upload_latest_json import main
 
 def get_latest_data(filename="latest.json"):
     """ 
@@ -48,6 +48,6 @@ def get_all_city(df):
     """
     return list(df["city"].values)
 
-if __name__=="main":
-    main()
-    get_latest_data()
+# if __name__=="main":
+    # main()
+    # get_latest_data()
