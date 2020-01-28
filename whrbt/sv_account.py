@@ -55,8 +55,20 @@ def updateData(old_series, new_series):
     print(new_series)
     print("*" * 10)
     print(old_series)
-    return old_series[old_series != new_series]
-
+    update_list=[]
+    old_cities=set(old_series.index)
+    new_cities=set(new_series.index)
+    diff_cities=new_cities-old_cities
+    if len(diff_cities)>0:
+        update_list.extend(diff_cities)
+        
+    update_cities=(old_series[old_series != (new_series[old_cities])]).index
+    if len(update_cities)>0:
+        update_list.extend(update_cities)
+    if len(update_cities)>0:
+        return new_series[update_cities]
+    else:
+        return pd.Series()
 
 old_series = pushData()
 r = Connect()
