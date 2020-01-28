@@ -7,8 +7,7 @@ import pandas as pd
 
 import json2csv_realtime
 from werobot.client import Client as InformationClient # 消息类
-from redis_connect import Connect
-from sqlite_connect import SQLiteConnect
+from db_connect import RedisConnect,SQLiteConnect
 from config import APP_ID, APP_SECRET, TEMPLATE_ID
 
 
@@ -71,7 +70,7 @@ def updateData(old_series, new_series):
         return pd.Series()
 
 old_series = pushData()
-r = Connect()
+r = RedisConnect()
 
 while True:
     time.sleep(10 + 10 * random.random())
@@ -79,7 +78,7 @@ while True:
     update_series = updateData(old_series, new_series)
     if len(update_series) >= 1:
         old_series = new_series
-    all_keys = set(map(lambda x: x.decode(), r.getAllKeys()))
+    all_keys = set(map(lambda x: x.decode(), r.get_all_keys()))
     co_cities = set(update_series.index) & set(all_keys)
     # co_cities=all_keys #待注释
     print(all_keys)
@@ -89,7 +88,7 @@ while True:
     client = CustomService(APP_ID, APP_SECRET)
     for city in co_cities:
         data = update_series[city]
-        for wechat_id in r.getData(city):
+        for wechat_id in r.get_subscribed_users(city):
             Data = {
                 "Data": {
                     "value": data,

@@ -1,3 +1,5 @@
+import redis
+
 import os
 
 import requests
@@ -150,3 +152,23 @@ class SQLiteConnect:
         results = result_proxy.fetchall()
 
         return [sub[1] for sub in results]
+
+
+class RedisConnect:
+    """
+    Redis 接口封装类
+    """
+    def __init__(self, host="localhost", port=6379, password=None):
+        self.r = redis.Redis(host=host, port=port, password=password)
+
+    def save_subscription(self, uid, city):
+        self.r.sadd(city,uid)
+
+    def cancel_subscription(self, uid, city):
+        self.r.srem(city, uid)
+    
+    def get_subscribed_users(self, city):
+        return self.r.smembers(city)
+    
+    def get_all_keys(self):
+        return self.r.keys()

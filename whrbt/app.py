@@ -1,18 +1,15 @@
 import os
 import re
 import glob
-
 from werobot import WeRoBot
-
 import json2csv_realtime
 from config import *
-from redis_connect import Connect
-from sqlite_connect import SQLiteConnect
+from db_connect import RedisConnect,SQLiteConnect
 
 
 # 初始化
 robot = WeRoBot(token=TOKEN)
-r = Connect(host=REDIS_HOST, port=REDIS_PORT)
+r = RedisConnect(host=REDIS_HOST, port=REDIS_PORT)
 
 
 class RedisToMySQL:
@@ -31,12 +28,12 @@ def reply_text(message):
     if sub_city:
         sub_city = sub_city.group(1)
         print(sub_city)
-        r.addUser(sub_city, wechat_id)
+        r.save_subscription(wechat_id,sub_city)
         return "订阅成功"
     pop_city =re.search("pop:(.*)", message.content)
     if pop_city:
         pop_city = pop_city.group(1)
-        r.deleteUser(pop_city, wechat_id)
+        r.cancel_subscription(wechat_id,pop_city)
         return "删除成功"
     return ""
 
