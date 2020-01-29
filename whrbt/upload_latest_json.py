@@ -142,7 +142,7 @@ class City(object):
 def update_latest_data():
     data = Data(p)
     while True:
-        time.sleep(5 + 10 * random.random())
+        time.sleep(100)
         response = load_response()
         if response['data']['listByArea'] != data.response['data']['listByArea']:
             data.update()
