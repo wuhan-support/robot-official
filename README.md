@@ -1,7 +1,7 @@
-# 微信公众号 / 个人微信机器人
+# 微信公众号机器人
 
 ## 个人微信号机器人
-个人微信号机器人已经上线，[友情链接](https://github.com/wuhan-support/NcovWeRobotPersonal)
+个人微信号机器人已完成一阶段开发，请参见[NcovWeRobotPersonal](https://github.com/wuhan-support/NcovWeRobotPersonal)
 
 ## 目的
 该项目还在进行中并且需要您的帮助，我们希望能让所有人都变成自媒体，您若赋闲在家，不妨搭建自己小型的机器人，传播消息更传播爱。
