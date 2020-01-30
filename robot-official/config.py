@@ -6,12 +6,15 @@ TEMPLATE_ID = "UERFlixwLwONbYm2dSkSiG_ruZvA-cMmYNM2lqT71mY"
 ROBOT_HOST = 'auto'
 ROBOT_PORT = 8000
 
+# 数据库选择
+DATABASE = 'redis' # 目前只支持 redis 或 sqlite
+
 # Redis 服务器
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 
 # SQLite 配置
-DB_FILE = 'feiyan-help.sqlite'
+SQLITE_FILE = 'feiyan-help.sqlite'
 
 # App ID 及 secret
 APP_ID = "wxefe3661b7c4eb705"

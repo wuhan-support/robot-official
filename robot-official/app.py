@@ -7,6 +7,8 @@ from db_connect import RedisConnect,SQLiteConnect
 import json
 import pandas as pd
 from dispose_data import Data
+
+
 # 初始化
 robot = WeRoBot(token=TOKEN)
 r = RedisConnect(host=REDIS_HOST, port=REDIS_PORT)
