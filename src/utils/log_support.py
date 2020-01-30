@@ -1,7 +1,9 @@
-import logging, logging.handlers
+import logging
+import logging.handlers
 import os
 from constant import BASE_DIR, LOGGING_FORMAT
 import datetime
+
 
 class LogSupport(object):
 
@@ -35,14 +37,17 @@ class LogSupport(object):
             print(info)
         self.logging.info(info)
 
+
 def check_dir_exist(dir):
     if os.path.exists(dir) == False:
         os.makedirs(dir)
 
+
 def get_now_time():
     return datetime.datetime.now().strftime('%Y-%m-%d')
 
-if __name__ =='__main__':
+
+if __name__ == '__main__':
     ls = LogSupport()
     ls.logging_info("test")
     try:
@@ -50,4 +55,3 @@ if __name__ =='__main__':
     except IndexError as e:
         ls.logging.exception(e)
     ls.logging.warning("警告")
-
