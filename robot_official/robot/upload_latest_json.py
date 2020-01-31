@@ -1,47 +1,35 @@
-import json
-import random
-import time
 import os
+import time
+import random
+import json
+
 import requests
-from log_support import LogSupport
 import pandas as pd
 
+from .constants import *
+from ..utils.log import Logger
 
-# 初始化日志
-ls = LogSupport()
+
+logger = Logger('upload_latest_json')
 
 
 def load_response():
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4037.2 Safari/537.36',
-            'Connection': 'keep - alive',
-            'Cache-Control': 'max-age=0',
-            'Upgrade-Insecure-Requests': '1',
-            'Accept': '*/*',
-            'Sec-Fetch-Site': 'cross-site',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-User': '?1',
-            'Sec-Fetch-Dest': 'document',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en-AU;q=0.8,en;q=0.7,zh-TW;q=0.6',
-            'Host': 'service-f9fjwngp-1252021671.bj.apigw.tencentcs.com'
-        }
         api = 'https://service-f9fjwngp-1252021671.bj.apigw.tencentcs.com/release/pneumonia'
-        response = json.loads(requests.get(api, headers=headers).text)
+        response = requests.get(api, headers=REQUEST_HEADERS).json()
         if not response['data']['listByArea']:
             raise Exception(response)
         ls.logging.info('json loaded at time {}'.format(
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
         return response
     except Exception as e:
-        ls.logging.error('json load failed, waiting for around 15 seconds')
-        ls.logging.exception(e)
+        logger.error('json load failed, waiting for around 15 seconds')
+        logger.exception(e)
         time.sleep(15 + 5 * random.random())
         return load_response()
 
 
-def load_json(file_name='./jsons/latest.json'):
+def load_json(file_name='assets/data/latest.json'):
     with open(file_name, 'r+') as f:
         return json.load(f)
 
