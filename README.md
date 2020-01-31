@@ -30,8 +30,8 @@
 
 `config.py` 中填入 `TEMPLATE_ID`, `APP_ID`, `SECRET_ID`
 
-![订阅演示 1](./assets/image/subscription-demo-1.jpg)
-![订阅演示 2](./assets/image/subscription-demo-2.jpg)
+![订阅演示 1](./assets/images/subscription-demo-1.jpg)
+![订阅演示 2](./assets/images/subscription-demo-2.jpg)
 
 支持各省市，全国，输入暂时需要缩写，不带“省”，“市”
 订阅全国=订阅所有城市，订阅某个省=订阅该省所有城市
