@@ -1,7 +1,7 @@
-# 微信公众号机器人
+# 微信公众号疫情信息小助手（非官方）
 
-## 个人微信号机器人
-个人微信号机器人已完成一阶段开发，请参见[NcovWeRobotPersonal](https://github.com/wuhan-support/NcovWeRobotPersonal)
+> *疫情信息小助手**个人版本**已完成一阶段开发，请参见 [robot-personal](https://github.com/wuhan-support/robot-personal)。*
+
 
 ## 目的
 该项目还在进行中并且需要您的帮助，我们希望能让所有人都变成自媒体，您若赋闲在家，不妨搭建自己小型的机器人，传播消息更传播爱。
@@ -30,8 +30,8 @@
 
 `config.py` 中填入 `TEMPLATE_ID`, `APP_ID`, `SECRET_ID`
 
-![图片1](./whrbt/image/dd060b73dd42a283f38fd3b5dec61c6.jpg)
-![图片2](./whrbt/image/d993601c9252ef548d8dbffbd724266.jpg )
+![订阅演示 1](./assets/images/subscription-demo-1.jpg)
+![订阅演示 2](./assets/images/subscription-demo-2.jpg)
 
 支持各省市，全国，输入暂时需要缩写，不带“省”，“市”
 订阅全国=订阅所有城市，订阅某个省=订阅该省所有城市

@@ -2,14 +2,16 @@ import os
 import time
 import random
 import datetime
-from constant import ALL_CHINA
-import pandas as pd
-from dispose_data import Data
-from upload_latest_json import  update_latest_data
 import threading
-from werobot.client import Client as InformationClient # 消息类
-from db_connect import RedisConnect,SQLiteConnect
-from config import APP_ID, APP_SECRET, TEMPLATE_ID
+
+import pandas as pd
+from werobot.client import Client as InformationClient
+
+from .constants import ALL_CHINA
+from .dispose_data import Data
+from .upload_latest_json import update_latest_data
+from ..utils.db_connect import RedisConnect, SQLiteConnect # 这里不应该要用到utils
+from ..config import APP_ID, APP_SECRET, TEMPLATE_ID
 
 
 class CustomService:
@@ -38,15 +40,14 @@ def main():
     """
     r = RedisConnect()
     old_data = Data(r)
-    
 
     while True:
         time.sleep(100)
         new_data = Data(r)
-        update_series,city_to_uid = old_data.updateData(new_data)
+        update_series, city_to_uid = old_data.updateData(new_data)
         if len(update_series) >= 1:
             old_data = new_data
-        
+
         co_cities = list(city_to_uid.keys())
         print(set(update_series.index))
         print(co_cities)
@@ -68,7 +69,9 @@ def main():
                         "color": "#173177"
                     }
                 }
-                client.send_template_message(wechat_id, TEMPLATE_ID, template_data)
+                client.send_template_message(
+                    wechat_id, TEMPLATE_ID, template_data)
 
-threading.Thread(target=update_latest_data).start()#更新数据
+
+threading.Thread(target=update_latest_data).start()  # 更新数据
 main()

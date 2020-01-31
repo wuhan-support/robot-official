@@ -5,8 +5,12 @@ import os
 import requests
 from log_support import LogSupport
 import pandas as pd
+
+
 # 初始化日志
 ls = LogSupport()
+
+
 def load_response():
     try:
         headers = {
@@ -27,7 +31,8 @@ def load_response():
         response = json.loads(requests.get(api, headers=headers).text)
         if not response['data']['listByArea']:
             raise Exception(response)
-        ls.logging.info('json loaded at time {}'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+        ls.logging.info('json loaded at time {}'.format(
+            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
         return response
     except Exception as e:
         ls.logging.error('json load failed, waiting for around 15 seconds')
@@ -44,6 +49,10 @@ def load_json(file_name='./jsons/latest.json'):
 def write_json(file_name, js):
     with open(file_name, 'w+') as f:
         json.dump(js, f)
+
+
+def p():
+    print(0)
 
 
 class Data(object):
@@ -71,7 +80,8 @@ class Data(object):
             else:
                 old_dict = self.data_dict
                 self.response = latest_response
-                self.provinces = self.load_stat(self.response['data']['listByArea'])
+                self.provinces = self.load_stat(
+                    self.response['data']['listByArea'])
                 self.time_stamp = time.time()
                 self.suspect = 0
                 self.confirmed = 0
@@ -84,10 +94,13 @@ class Data(object):
                     self.cured += province.cured
                     self.dead += province.dead
                     self.data_dict[province.name] = \
-                        [province.suspect, province.confirmed, province.cured, province.dead]
+                        [province.suspect, province.confirmed,
+                            province.cured, province.dead]
                     for city in province.cities:
-                        self.data_dict[city.name] = [city.suspect, city.confirmed, city.cured, city.dead]
-                self.diff_dict = {k: v for k, v in self.data_dict.items() if k not in old_dict or old_dict[k] != v}
+                        self.data_dict[city.name] = [
+                            city.suspect, city.confirmed, city.cured, city.dead]
+                self.diff_dict = {k: v for k, v in self.data_dict.items(
+                ) if k not in old_dict or old_dict[k] != v}
                 ls.logging.info('data constructed')
                 return True
         except Exception as e:
@@ -113,9 +126,6 @@ class Data(object):
                 ls.logging.exception(e)
 
 
-def p():
-    print(0)
-
 class Province(object):
     def __init__(self, province_stat):
         self.name = province_stat['provinceName']
@@ -139,6 +149,7 @@ class City(object):
         self.cured = city_stat['cured']
         self.dead = city_stat['dead']
 
+
 def update_latest_data():
     data = Data(p)
     while True:
@@ -147,5 +158,6 @@ def update_latest_data():
         if response['data']['listByArea'] != data.response['data']['listByArea']:
             data.update()
 
-if __name__=="main":
+
+if __name__ == "main":
     update_latest_data()
