@@ -1,7 +1,6 @@
-import redis
-
 import os
 
+import redis
 import requests
 import sqlalchemy as db
 

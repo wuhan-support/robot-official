@@ -1,7 +1,9 @@
 import json
+
 import pandas as pd
-# from upload_latest_json import main
-from constant import ALL_CHINA
+
+from .constants import ALL_CHINA
+# from .upload_latest_json import main
 
 
 class Data:

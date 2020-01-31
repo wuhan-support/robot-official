@@ -1,8 +1,9 @@
+import os
+import datetime
 import logging
 import logging.handlers
-import os
-from constant import BASE_DIR, LOGGING_FORMAT
-import datetime
+
+from .constants import BASE_DIR, LOGGING_FORMAT
 
 
 class LogSupport(object):

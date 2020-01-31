@@ -2,14 +2,16 @@ import os
 import time
 import random
 import datetime
-from constant import ALL_CHINA
-import pandas as pd
-from dispose_data import Data
-from upload_latest_json import update_latest_data
 import threading
-from werobot.client import Client as InformationClient  # 消息类
-from db_connect import RedisConnect, SQLiteConnect
-from config import APP_ID, APP_SECRET, TEMPLATE_ID
+
+import pandas as pd
+from werobot.client import Client as InformationClient
+
+from .constants import ALL_CHINA
+from .dispose_data import Data
+from .upload_latest_json import update_latest_data
+from ..utils.db_connect import RedisConnect, SQLiteConnect # 这里不应该要用到utils
+from ..config import APP_ID, APP_SECRET, TEMPLATE_ID
 
 
 class CustomService:

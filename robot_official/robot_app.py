@@ -6,13 +6,13 @@ import glob
 import pandas as pd
 from werobot import WeRoBot
 
-from config import *
-from dispose_data import Data
-from db_connect import RedisConnect, SQLiteConnect
+from .config import *
+from .robot.dispose_data import Data
+from .utils.db_connect import RedisConnect, SQLiteConnect
 
 
 # 初始化机器人与数据库连接
-robot = WeRoBot(token=TOKEN)
+app = WeRoBot(token=TOKEN)
 
 if DATABASE == 'redis':
     r = RedisConnect(host=REDIS_HOST, port=REDIS_PORT)
@@ -28,7 +28,7 @@ class RedisToMySQL:
 
 
 # 文字消息处理句柄
-@robot.text
+@app.text
 def reply_text(message):
     wechat_id = message.source
     print(message.content)
@@ -83,9 +83,6 @@ def reply_text(message):
     return "输入有误，请重新输入"
 
 # 订阅消息处理句柄
-@robot.subscribe
+@app.subscribe
 def account_subscribe(message):
     return "感谢关注"
-
-
-robot.run(ROBOT_HOST, port=ROBOT_PORT)
