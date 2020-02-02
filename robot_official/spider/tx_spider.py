@@ -68,6 +68,8 @@ class TXSpider():
                 else:
                     set_should_update(True)
                 self.logger.info('更新了{}个地区的疫情数据'.format(len(updated_areas)))
+                updated_names = '、'.join([area['area'] for area in updated_areas])
+                self.logger.debug('更新了以下地区的数据：{}'.format(updated_names))
             else:
                 # self.re.set(SHOULD_UPDATE, 0)
                 self.logger.info('没有地区有疫情数据更新')
@@ -198,7 +200,7 @@ class TXSpider():
 
     def parse_data_change(self, previous_data, new_data):
         '''计算有更新的地区'''
-        update = []
+        updated_areas = []
         for key, area in new_data.items():
             previous = previous_data.get(key)
             if previous:
@@ -212,8 +214,8 @@ class TXSpider():
                 new_data[key]['n_dead'] = area['dead']
                 new_data[key]['n_heal'] = area['heal']
             if self.check_whether_update(new_data[key]):
-                update.append(new_data[key])
-        return update
+                updated_areas.append(new_data[key])
+        return updated_areas
 
     def check_whether_update(self, area):
         '''检查是否有数据更新（新旧数据之差是否大于0）'''
