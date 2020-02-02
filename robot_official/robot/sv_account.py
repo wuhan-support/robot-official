@@ -15,12 +15,10 @@ from ..config import APP_ID, APP_SECRET, TEMPLATE_ID
 
 
 class CustomService:
-    """
-    客服服务，回复消息，根据city获取用户id，并发送
-    """
+    '''客服服务，回复消息，根据city获取用户id，并发送'''
 
-    def __init__(self, APP_ID, APP_SECRET):
-        config = {"APP_ID": APP_ID, "APP_SECRET": APP_SECRET}
+    def __init__(self, app_id, app_secret):
+        config = {"APP_ID": app_id, "APP_SECRET": app_secret}
         self.client = InformationClient(config)
 
     def add_custom_service_account(self, account, nickname, password):

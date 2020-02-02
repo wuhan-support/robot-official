@@ -45,7 +45,7 @@ class Logger:
             logger_name += '.{}'.format(module_name)
         self.logger = logging.getLogger(logger_name)
 
-        self.logger.info('成功创建 Logger: {}'.format(logger_name))
+        self.logger.debug('成功创建 Logger: {}'.format(logger_name))
     
     def debug(self, msg):
         self.logger.debug(msg)
