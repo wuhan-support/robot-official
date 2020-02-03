@@ -51,8 +51,10 @@ def reply_text(message):
     if is_subscribe:
         if not target:
             return '请输入地区名称（如：订阅武汉）。'
-        elif target in ('全国', '中国') or target in pros or target in all_city:
-            db.save_subscription(wechat_id, target)
+        # elif target in ('全国', '中国') or target in pros or target in all_city:
+        #     db.save_subscription(wechat_id, target)
+        #     return '成功订阅{}的疫情信息！'.format(target)
+        elif db.save_subscription(wechat_id, target) != -1:
             return '成功订阅{}的疫情信息！'.format(target)
         else:
             return '尝试订阅{}失败，该地区名称不正确或暂无疫情信息。'.format(target)
@@ -61,8 +63,10 @@ def reply_text(message):
     if is_unsubscribe:
         if not target:
             return '请输入地区名称（如：取消订阅武汉）。'
-        elif target in ('全国', '中国') or target in pros or target in all_city:
-            db.cancel_subscription(wechat_id, target)
+        # elif target in ('全国', '中国') or target in pros or target in all_city:
+        #     db.cancel_subscription(wechat_id, target)
+        #     return '成功取消{}的疫情信息订阅。'.format(target)
+        elif db.cancel_subscription(wechat_id, target) != -1:
             return '成功取消{}的疫情信息订阅。'.format(target)
         else:
             return '尝试取消{}的疫情信息订阅失败，您好像没有订阅该地区信息或者地区名称错误。'.format(target)
