@@ -26,3 +26,6 @@ SQLITE_FILE = 'feiyan-help.sqlite' # 默认: 'feiyan-help.sqlite'
 DATA_DIR = Path('assets/data/')
 DATA_ALL_FILENAME = 'latest.json' # 存储所有数据的文件名
 UPDATES_FILENAME = 'updates.json' # 存储任何待推送的更新的文件名
+
+# 更新间隔
+UPDATE_INTERVAL = 60 * 5 # 秒

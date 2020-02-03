@@ -36,6 +36,8 @@ class PushUpdatesClient:
         self.client.send_template_message(user_id, template_id, data, url)
     
     def parse_update_into_message(self, area):
+        # TODO: implement
+        return '新增死亡：{}'.format(area['n_dead'])
 
     def main(self):
         # 检查是否有需要推送的数据更新
@@ -52,7 +54,7 @@ class PushUpdatesClient:
 
             template_data = {
                 'data': {
-                    'value': '新增死亡：{}'.format(area['n_dead']),
+                    'value': self.parse_update_into_message(area),
                     'color': '#aa3177'
                 },
                 'date': {
