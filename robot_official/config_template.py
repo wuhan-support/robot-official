@@ -19,3 +19,8 @@ REDIS_PORT = 6379 # 默认: 6379
 
 # SQLite 配置
 SQLITE_FILE = 'feiyan-help.sqlite' # 默认: 'feiyan-help.sqlite'
+
+# 数据存储
+DATA_DIR = Path('assets/data/')
+DATA_ALL_FILENAME = 'latest.json' # 存储所有数据的文件名
+UPDATES_FILENAME = 'updates.json' # 存储任何待推送的更新的文件名
