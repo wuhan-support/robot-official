@@ -1,7 +1,7 @@
 from time import sleep
 
-from .constants import UPDATE_INTERVAL
 from .tx_spider import TXSpider
+from ..config import UPDATE_INTERVAL
 
 
 tx_spider = TXSpider()

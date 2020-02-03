@@ -1,7 +1,7 @@
 from time import sleep
 
-from .constants import UPDATE_INTERVAL
 from .push_updates import PushUpdatesClient
+from ..config import UPDATE_INTERVAL
 
 
 client = PushUpdatesClient()

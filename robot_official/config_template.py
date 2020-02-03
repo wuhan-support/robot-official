@@ -1,3 +1,5 @@
+from pathlib import Path
+
 # 微信公众号/服务号 token
 TOKEN = 'YOUR_TOKEN'
 TEMPLATE_ID = 'YOUR_TEMPLATE_ID'
