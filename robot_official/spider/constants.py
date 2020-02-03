@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-UPDATE_INTERVAL = 30 # 秒
+UPDATE_INTERVAL = 60 * 5 # 秒
 
 DATA_URL = 'https://view.inews.qq.com/g2/getOnsInfo'
 REGION_PARAM = {'name': 'disease_h5'}
@@ -16,7 +16,3 @@ REQUEST_HEADERS = {
 }
 
 SPLIT_ABBR_SUFFIX = r'(.*?)((?:自治[区州])|省|市|县|(?:新?区)|镇)'
-
-DATA_DIR = Path('assets/data/')
-DATA_FILE_ALL = 'latest.json' # 存储所有数据的文件名
-UPDATE_FLAG_FILE = DATA_DIR / Path('needs_update') # 该文件存在与否是数据是否有更新的flag（不是很elegant的实现）

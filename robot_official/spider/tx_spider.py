@@ -48,17 +48,18 @@ class TXSpider():
             # latest_data['全国']['dead'] = int(chinaTotal['dead'])
             # latest_data['全国']['heal'] = int(chinaTotal['heal'])
 
-            # 保存所有地区名称至数据库
-            self.save_all_areas(latest_data)
-
             # 计算该数据与上一次数据之差
             previous_data = load_stored_data()
             updated_areas = self.parse_data_change(previous_data, latest_data)
             self.logger.debug('共有{}个地区存在数据更新'.format(len(updated_areas)))
 
+            # 保存所有地区名称至数据库及JSON
+            self.save_all_areas(latest_data) # 数据库
+            store_data(latest_data) # JSON
+
             # 如果数据有更新，则保存新数据和更新的数据
             if len(updated_areas) > 0:
-                store_data(latest_data) # 存储最新数据至JSON
+                store_data(updated_areas) # 存储最新数据至JSON
                 if get_should_update():
                     # TODO: 如果上一次的数据更新还未推送，要合并新增数据
                     # old_update_city = self.get_old_data_city()
@@ -66,7 +67,7 @@ class TXSpider():
                     #     updated_areas = self.merge_update_city(old_city_list=old_update_city, new_city_list=updated_areas)
                     pass
                 else:
-                    set_should_update(True)
+                    set_update(updated_areas)
                 self.logger.info('更新了{}个地区的疫情数据'.format(len(updated_areas)))
                 updated_names = '、'.join([area['area'] for area in updated_areas])
                 self.logger.debug('更新了以下地区的数据：{}'.format(updated_names))
