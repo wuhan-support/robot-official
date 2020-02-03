@@ -3,7 +3,7 @@ import datetime
 
 from werobot.client import Client
 
-from ..config import DATABASE, DATA_DIR, UPDATES_FILENAME
+from ..config import APP_ID, APP_SECRET, DATABASE, DATA_DIR, UPDATES_FILENAME
 from ..utils.log import Logger
 from ..utils.db_connect import RedisConnect, SQLiteConnect
 from ..spider.spider_utils import get_should_update, remove_update
@@ -15,7 +15,7 @@ updates_file = DATA_DIR / UPDATES_FILENAME
 class PushUpdatesClient:
     '''推送数据更新封装类'''
 
-    def __init__(self, app_id, app_secret):
+    def __init__(self, app_id=APP_ID, app_secret=APP_SECRET):
         self.logger = Logger('push')
 
         config = {'APP_ID': app_id, 'APP_SECRET': app_secret}
