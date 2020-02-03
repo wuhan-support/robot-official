@@ -201,7 +201,9 @@ class TXSpider():
 
     def parse_data_change(self, previous_data, new_data):
         '''计算有更新的地区'''
-        previous_data = {previous['area']: previous for previous in previous_data} # 统一数据格式
+        if isinstance(previous_data, list):
+            # 统一数据格式
+            previous_data = {previous['area']: previous for previous in previous_data}
         updated_areas = []
         for key, area in new_data.items():
             previous = previous_data.get(key)
