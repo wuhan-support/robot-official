@@ -20,9 +20,9 @@ logger.info('初始化 WeRoBot 完成')
 
 logger.info('数据库类型: {}'.format(DATABASE))
 if DATABASE == 'redis':
-    db = RedisConnect(host=REDIS_HOST, port=REDIS_PORT)
+    db = RedisConnect()
 elif DATABASE == 'sqlite':
-    db = SQLiteConnect(db_file=SQLITE_FILE)
+    db = SQLiteConnect()
 else:
     logger.critical('未知数据库类型，无法初始化')
     exit()
@@ -43,6 +43,9 @@ def reply_text(message):
         all_city = data.get_all_city(data_df)
         pro_to_city = data.transfer_pro_to_ct(data_df)
         pros = pro_to_city.index
+    
+    # 这里存储订阅还可以使用微信官方提供的标签系统来实现
+    # 但使用数据库无疑是对公众号影响最小的实现方法
 
     is_subscribe, target = is_subscribe_msg(msg)
     if is_subscribe:

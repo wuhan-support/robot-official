@@ -1,7 +1,6 @@
-import os
+from pathlib import Path
 
 import redis
-import requests
 import sqlalchemy as sql
 
 from .log import Logger
@@ -15,7 +14,7 @@ class SQLiteConnect:
     '''SQLite 数据库接口封装类'''
 
     def __init__(self, db_file=SQLITE_FILE):
-        create_tables = not os.path.isfile(db_file)
+        create_tables = not Path(db_file).exists()
 
         # 目前机器人线程和爬虫线程都会访问同一个SQLite数据库
         # 这个操作会引起SQLite多线程错误警告
@@ -50,39 +49,6 @@ class SQLiteConnect:
             self.metadata.create_all(self.engine)
             logger.info('数据库表创建完成')
  
-    # def insert_cities_data(self):
-    #     '''处理并将城市数据保存至数据库中'''
-    #     raw_cities = self._get_all_cities()
-
-    #     insert_data = []
-    #     for city in raw_cities:
-    #         row = {'cn_id': city['id']}
-    #         if city['province'].endswith('市'):
-    #             row['province'] = ''
-    #             row['name'] = city['province']
-    #             row['abbr'] = city['province'].rstrip('市')
-    #         elif '直辖县级行政区划' in city['name']:
-    #             continue
-    #         else:
-    #             row['province'] = city['province']
-    #             row['name'] = city['name']
-    #             row['abbr'] = city['name'].rstrip('市')
-    #         insert_data.append(row)
-        
-    #     query = sql.insert(self.areas)
-    #     self.conn.execute(query, insert_data)
-
-    # def _get_all_cities(self):
-    #     '''获取包含所有中国城市名称的列表'''
-    #     try:
-    #         req = requests.get(CITY_DATA_URL)
-    #         if req.status_code != 200:
-    #             return []
-    #         data = req.json()
-    #     except Exception:
-    #         return []
-    #     return [city_data for city_id, city_data in data.items()]
-
     def get_all_areas(self):
         '''返回目前数据库中所有的地区名称'''
         query = sql.select([self.areas.columns.name])
@@ -100,6 +66,7 @@ class SQLiteConnect:
     def _get_city_id(self, city_name):
         '''获取指定城市名称在数据库中的ID'''
         # TODO: 可能可以添加模糊搜索
+        # TODO: 使用缓存（或许Redis?）
         query = sql.select([self.areas]).where(
             sql.or_(
                 self.areas.columns.abbr == city_name,
