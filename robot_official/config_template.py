@@ -1,15 +1,16 @@
 from pathlib import Path
 
-# 微信公众号/服务号 AppID 及 AppSecret
+# 微信公众号/服务号相关信息
 APP_ID = 'YOUR_APP_ID'
 APP_SECRET = 'YOUR_APP_SECRET'
-
-# 微信公众号/服务号接口 Token 及模板 ID
 TOKEN = 'YOUR_TOKEN'
+ENCODING_AES_KEY = 'YOUR_ENCODING_AES_KEY'
+
+# 推送模板消息ID
 TEMPLATE_ID = 'YOUR_TEMPLATE_ID'
 
 # 机器人监听
-ROBOT_HOST = 'auto' # 默认: 'auto'
+ROBOT_HOST = '127.0.0.1' # 默认: '127.0.0.1'
 ROBOT_PORT = 8000 # 默认: 8000
 
 # 数据库选择
