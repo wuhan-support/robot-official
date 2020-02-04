@@ -14,20 +14,19 @@ class SQLiteConnect:
     '''SQLite 数据库接口封装类'''
 
     def __init__(self, db_file=SQLITE_FILE):
-        create_tables = not Path(db_file).exists()
-
         # 目前机器人线程、爬虫线程和推送线程都会访问同一个SQLite数据库
         # 这个操作会引起SQLite多线程错误警告
         # 我暂时性使用了忽略警告的办法，但是这不是一个优雅的甚至不是好的解决方法
         # 未来需要更好的解决方法
+        # TODO: Make this class into a singleton
         self.engine = sql.create_engine('sqlite:///{}'.format(db_file), connect_args={'check_same_thread': False})
         self.conn = self.engine.connect()
         self.metadata = sql.MetaData()
         self.areas_list = []
 
-        self.initialize_tables(create_tables)
+        self._initialize_tables()
 
-    def initialize_tables(self, create_tables=False):
+    def _initialize_tables(self):
         '''初始化数据库表'''
         self.areas = sql.Table('areas', self.metadata,
             sql.Column('id', sql.Integer(), primary_key=True, nullable=False),
@@ -48,7 +47,7 @@ class SQLiteConnect:
  
     def get_all_areas(self):
         '''返回目前数据库中所有的地区名称'''
-        query = sql.select([self.areas.columns.name])
+        query = sql.select([self.areas.c.name])
         result_proxy = self.conn.execute(query)
         results = result_proxy.fetchall()
 
@@ -57,7 +56,7 @@ class SQLiteConnect:
     def save_area(self, abbr, suffix, parent):
         '''保存一个地区至数据库'''
         # TODO: 检查是否地区已经存在
-        query = sql.insert(self.areas).values(abbr=abbr, suffix=suffix, name=abbr + suffix, parent=parent)
+        query = self.areas.insert().values(abbr=abbr, suffix=suffix, name=abbr + suffix, parent=parent)
         self.conn.execute(query)
     
     def _get_areas(self, target) -> list:
@@ -66,8 +65,8 @@ class SQLiteConnect:
         # TODO: 使用缓存（或许Redis?）
         query = sql.select([self.areas]).where(
             sql.or_(
-                self.areas.columns.abbr == target,
-                self.areas.columns.name == target
+                self.areas.c.abbr == target,
+                self.areas.c.name == target
             )
         )
         result_proxy = self.conn.execute(query)
@@ -77,7 +76,7 @@ class SQLiteConnect:
             return []
         return results
     
-    def _get_area_display_name(self, area):
+    def get_area_display_name(self, area):
         '''返回一个用户友好的地区名称，包含其父地区（除非是中国）'''
         area_display_name = '' if area.parent in ('全国', '中国') else area.parent
         area_display_name += area.name
@@ -89,13 +88,14 @@ class SQLiteConnect:
         if not areas:
             return -1, ''
         elif len(areas) > 1:
-            areas = [areas[0]] # TODO: 处理多个匹配
-        area = areas[0]
-        area_display_name = self._get_area_display_name(area)
+            area = areas[0] # TODO: 处理多个匹配
+        else:
+            area = areas[0]
+        area_display_name = self.get_area_display_name(area)
 
         # 插入数据
         # TODO: 检查是否已经存在该订阅
-        query = sql.insert(self.subscriptions).values(uid=uid, area_id=area.id)
+        query = self.subscriptions.insert().values(uid=uid, area_id=area.id)
         self.conn.execute(query)
 
         return 0, area_display_name
@@ -108,14 +108,14 @@ class SQLiteConnect:
         elif len(areas) > 1:
             areas = [areas[0]] # TODO: 处理多个匹配
         area = areas[0]
-        area_display_name = self._get_area_display_name(area)
+        area_display_name = self.get_area_display_name(area)
 
         # 删除数据
         try:
             query = sql.delete(self.subscriptions).where(
                 sql.and_(
-                    self.subscriptions.columns.uid == uid,
-                    self.subscriptions.columns.area_id == area.id
+                    self.subscriptions.c.uid == uid,
+                    self.subscriptions.c.area_id == area.id
                 )
             )
             self.conn.execute(query)
@@ -134,7 +134,7 @@ class SQLiteConnect:
             areas = [areas[0]] # TODO: 处理多个匹配
         area = areas[0]
         
-        query = sql.select([self.subscriptions]).where(self.subscriptions.columns.area_id == area.id)
+        query = sql.select([self.subscriptions]).where(self.subscriptions.c.area_id == area.id)
         result_proxy = self.conn.execute(query)
         results = result_proxy.fetchall()
 
@@ -166,6 +166,3 @@ class RedisConnect:
     
     def get_subscribed_users(self, area):
         return self.r.smembers(area)
-    
-    def get_all_keys(self):
-        return self.r.keys()
