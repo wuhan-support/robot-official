@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import redis
 import sqlalchemy as sql
 
@@ -59,7 +57,7 @@ class SQLiteConnect:
         query = self.areas.insert().values(abbr=abbr, suffix=suffix, name=abbr + suffix, parent=parent)
         self.conn.execute(query)
     
-    def _get_areas(self, target) -> list:
+    def _match_target_to_areas(self, target) -> list:
         '''返回数据库中所有匹配关键词的地区对象'''
         # TODO: 可能可以添加模糊搜索
         # TODO: 使用缓存（或许Redis?）
@@ -84,7 +82,7 @@ class SQLiteConnect:
 
     def save_subscription(self, uid, target):
         '''保存一个用户对于指定地区的订阅，并返回返回码及地区显示名称'''
-        areas = self._get_areas(target)
+        areas = self._match_target_to_areas(target)
         if not areas:
             return -1, ''
         elif len(areas) > 1:
@@ -102,7 +100,7 @@ class SQLiteConnect:
 
     def cancel_subscription(self, uid, target):
         '''取消一个用户对于指定地区的订阅，并返回返回码及地区显示名称'''
-        areas = self._get_areas(target)
+        areas = self._match_target_to_areas(target)
         if not areas:
             return -1, ''
         elif len(areas) > 1:
@@ -127,7 +125,7 @@ class SQLiteConnect:
 
     def get_subscribed_users(self, target):
         '''获取所有订阅指定地区的用户，返回UID列表'''
-        areas = self._get_areas(target)
+        areas = self._match_target_to_areas(target)
         if not areas:
             return []
         elif len(areas) > 1:
@@ -149,20 +147,55 @@ class RedisConnect:
 
     def get_all_areas(self):
         '''返回目前数据库中所有的地区名称'''
-        return self.r.keys('*')
+        # return self.r.keys('*')
+        return self.r.smembers('all_areas')
 
     def save_area(self, abbr, suffix, parent):
         '''保存一个地区至数据库'''
-        self.r.sadd('all_areas', abbr)
-        self.r.sadd('all_areas', abbr + suffix)
+        name = abbr + suffix
+        self.r.sadd('all_areas', name)
+        self.r.sadd('all_areas', abbr) # TODO: 为了查找用，但会导致重名地区数据覆盖，需修复
+        self.r.hmset('area:{}'.format(name), {
+            'abbr': abbr,
+            'suffix': suffix,
+            'name': name,
+            'parent': parent
+        })
 
-    def save_subscription(self, uid, area):
-        self.r.sadd(area, uid)
+    def _match_target_to_area(self, target) -> list:
+        '''返回数据库中匹配关键词的地区对象'''
+        # TODO: 处理重名情况
+        return self.r.hgetall('area:{}'.format(target))
 
-    def cancel_subscription(self, uid, area):
-        print(area)
-        print(uid)
-        self.r.srem(area, uid)
+    def get_area_display_name(self, area):
+        '''返回一个用户友好的地区名称，包含其父地区（除非是中国）'''
+        area_display_name = '' if area['parent'] in ('全国', '中国') else area['parent']
+        area_display_name += area['name']
+        return area_display_name
+
+    def save_subscription(self, uid, target):
+        '''保存一个用户对于指定地区的订阅，并返回返回码及地区显示名称'''
+        area = self._match_target_to_area(target)
+        if not area:
+            return -1, ''
+        area_display_name = self.get_area_display_name(area)
+        self.r.sadd('sub:{}'.format(area['name']), uid)
+
+        return 0, area_display_name
+
+    def cancel_subscription(self, uid, target):
+        '''取消一个用户对于指定地区的订阅，并返回返回码及地区显示名称'''
+        area = self._match_target_to_area(target)
+        if not area:
+            return -1, ''
+        area_display_name = self.get_area_display_name(area)
+        self.r.srem('sub:{}'.format(area['name']), uid)
+
+        return 0, area_display_name
     
-    def get_subscribed_users(self, area):
-        return self.r.smembers(area)
+    def get_subscribed_users(self, target):
+        '''获取所有订阅指定地区的用户，返回UID列表'''
+        area = self._match_target_to_area(target)
+        if not area:
+            return []
+        return self.r.smembers('sub:{}'.format(area['name']))

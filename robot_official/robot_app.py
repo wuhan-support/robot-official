@@ -9,6 +9,7 @@ from .utils.robot_msg import is_subscribe_msg, is_unsubscribe_msg
 logger = Logger('robot')
 
 app_config = {
+    'SERVER': 'auto',
     'HOST': ROBOT_HOST,
     'PORT': ROBOT_PORT,
     'APP_ID': APP_ID,
@@ -16,7 +17,7 @@ app_config = {
     'TOKEN': TOKEN,
     'ENCODING_AES_KEY': ENCODING_AES_KEY
 }
-app = WeRoBot(config=app_config, logger=logger)
+app = WeRoBot(config=app_config) # logger=logger
 logger.info('初始化 WeRoBot 完成')
 
 logger.info('数据库类型: {}'.format(DATABASE))
@@ -56,7 +57,7 @@ def reply_text(message):
             return '请输入地区名称（如：取消订阅武汉）。'
         
         code, sub_area_name = db.save_subscription(wechat_id, target)
-        elif code != -1:
+        if code != -1:
             return '成功取消{}的疫情信息订阅。'.format(sub_area_name)
         else:
             return '尝试取消{}的疫情信息订阅失败，您好像没有订阅该地区信息或者地区名称错误。'.format(target)
