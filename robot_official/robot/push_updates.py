@@ -3,7 +3,7 @@ import datetime
 
 from werobot.client import Client
 
-from ..config import APP_ID, APP_SECRET, DATABASE, DATA_DIR, UPDATES_FILENAME
+from ..config import APP_ID, APP_SECRET, TEMPLATE_ID, DATABASE, DATA_DIR, UPDATES_FILENAME
 from ..utils.log import Logger
 from ..utils.db_connect import RedisConnect, SQLiteConnect
 from ..spider.spider_utils import get_should_update, remove_update
