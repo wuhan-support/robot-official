@@ -16,35 +16,37 @@ class PushUpdatesClient:
     '''推送数据更新封装类'''
 
     def __init__(self, app_id=APP_ID, app_secret=APP_SECRET):
-        self.logger = Logger('push')
+        self.logger = Logger('PushClient')
 
-        config = {'APP_ID': app_id, 'APP_SECRET': app_secret}
-        self.client = Client(config)
+        client_config = {'APP_ID': app_id, 'APP_SECRET': app_secret}
+        self.client = Client(client_config)
 
         if DATABASE == 'redis':
             self.db = RedisConnect()
         elif DATABASE == 'sqlite':
             self.db = SQLiteConnect()
 
-    # def add_custom_service_account(self, account, nickname, password):
-    #     self.client.add_custom_service_account(account, nickname, password)
-
-    # def send_text_message(self, user_id, content):
-    #     self.client.send_text_message(user_id, content)
-
-    def send_template_message(self, user_id, template_id, data, url=''):
-        self.client.send_template_message(user_id, template_id, data, url)
-    
     def parse_update_into_message(self, area):
-        # TODO: implement
-        return '新增死亡：{}'.format(area['n_dead'])
+        msg = '新增'
+        msg += '确诊 {} 例'.format(area['n_confirm']) if area['n_confirm'] != 0 else ''
+        msg += '疑似 {} 例'.format(area['n_suspect']) if area['n_suspect'] != 0 else ''
+        msg += '死亡 {} 例'.format(area['n_dead']) if area['n_dead'] != 0 else ''
+        msg += '治愈 {} 例'.format(area['n_heal']) if area['n_heal'] != 0 else ''
+        msg += '\n'
+        msg += '截至目前总计'
+        msg += '确诊 {} 例'.format(area['confirm'])
+        msg += '死亡 {} 例'.format(area['dead'])
+        msg += '治愈 {} 例'.format(area['heal'])
+        return '\n{}\n'.format(msg)
 
     def main(self):
         # 检查是否有需要推送的数据更新
         if not get_should_update():
+            self.logger.debug('无数据更新，无需推送')
             return
         with updates_file.open() as f:
             updates = json.load(f)
+            self.logger.info('准备推送共{}个地区的数据更新'.format(len(updates)))
 
         # TODO: 最好把所有一个用户所有的订阅更新在一条消息里推送？
         for area in updates:
@@ -53,21 +55,22 @@ class PushUpdatesClient:
                 continue
 
             template_data = {
-                'data': {
+                'area': {
+                    'value': self.db.get_area_display_name(area),
+                    'color': '#2980b9'
+                },
+                'update': {
                     'value': self.parse_update_into_message(area),
-                    'color': '#aa3177'
+                    'color': '#d35400'
                 },
-                'date': {
-                    'value': datetime.datetime.now().strftime('%Y%m%d %H:%M:%S'),
-                    'color': '#17aa77'
-                },
-                'city': {
-                    'value': area['parent'] + area['area'],
-                    'color': '#1731aa'
+                'datetime': {
+                    'value': datetime.datetime.now().strftime('%Y年%-m月%-d日 %H:%M'),
+                    'color': '#7f8c8d'
                 }
             }
             for user in subscribed_users:
-                self.send_template_message(user, TEMPLATE_ID, template_data)
+                self.client.send_template_message(user, TEMPLATE_ID, template_data)
         
         # 完成推送，删除数据更新文件
         remove_update()
+        self.logger.info('全部更新推送完成')

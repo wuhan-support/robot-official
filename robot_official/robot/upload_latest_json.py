@@ -1,3 +1,6 @@
+##### 此文件已被弃用，只是留作参考用 #####
+
+
 import os
 import time
 import random
