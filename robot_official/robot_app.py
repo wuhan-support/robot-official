@@ -54,8 +54,9 @@ def reply_text(message):
         # elif target in ('全国', '中国') or target in pros or target in all_city:
         #     db.save_subscription(wechat_id, target)
         #     return '成功订阅{}的疫情信息！'.format(target)
-        elif db.save_subscription(wechat_id, target) != -1:
-            return '成功订阅{}的疫情信息！'.format(target)
+        code, sub_area_name = db.save_subscription(wechat_id, target)
+        if code != -1:
+            return '成功订阅{}的疫情信息！'.format(sub_area_name)
         else:
             return '尝试订阅{}失败，该地区名称不正确或暂无疫情信息。'.format(target)
 

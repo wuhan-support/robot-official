@@ -1,12 +1,12 @@
 from pathlib import Path
 
-# 微信公众号/服务号 token
-TOKEN = 'YOUR_TOKEN'
-TEMPLATE_ID = 'YOUR_TEMPLATE_ID'
-
 # 微信公众号/服务号 AppID 及 AppSecret
 APP_ID = 'YOUR_APP_ID'
 APP_SECRET = 'YOUR_APP_SECRET'
+
+# 微信公众号/服务号接口 Token 及模板 ID
+TOKEN = 'YOUR_TOKEN'
+TEMPLATE_ID = 'YOUR_TEMPLATE_ID'
 
 # 机器人监听
 ROBOT_HOST = 'auto' # 默认: 'auto'
