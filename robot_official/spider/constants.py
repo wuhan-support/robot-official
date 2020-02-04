@@ -1,6 +1,3 @@
-from pathlib import Path
-
-
 DATA_URL = 'https://view.inews.qq.com/g2/getOnsInfo'
 REGION_PARAM = {'name': 'disease_h5'}
 NATIONAL_PARAM = {'name': 'wuwei_ww_global_vars'}

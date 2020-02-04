@@ -1,19 +1,11 @@
-import os
 import re
 import json
-from urllib import parse
 
 import requests
 
-# from src.util.constant import ALL_AREA_KEY, AREA_TAIL, SHOULD_UPDATE, STATE_NCOV_INFO, UPDATE_CITY, TIME_SPLIT, \
-#     USE_REDIS, BASE_DIR, DATA_DIR
-# from src.util.redis_config import connect_redis, save_json_info, load_last_info, save_json_info_as_key
-# from src.util.sqlite_config import SQLiteConnect
-# from src.util.util import check_dir_exist
-
-from .constants import *
-from .spider_utils import *
-from ..config import *
+from .constants import DATA_URL, REGION_PARAM, NATIONAL_PARAM, REQUEST_HEADERS, SPLIT_ABBR_SUFFIX
+from .spider_utils import load_stored_data, store_data, get_should_update, set_update
+from ..config import DATABASE, DATA_DIR
 from ..utils.log import Logger
 from ..utils.db_connect import RedisConnect, SQLiteConnect
 
@@ -68,59 +60,6 @@ class TXSpider():
 
         except Exception as e:
             self.logger.exception(e)
-
-    # def get_old_data_city(self):
-    #     try:
-    #         if USE_REDIS:
-    #             old_update_city = json.loads(self.re.get(UPDATE_CITY))
-    #         else:
-    #             file = os.path.join(DATA_DIR, UPDATE_CITY + ".json")
-    #             with open(file, 'r', encoding='utf-8') as r:
-    #                 old_update_city = json.load(r)
-    #         return old_update_city
-    #     except Exception as e:
-    #         self.logger.error("Error: failed to load old update city")
-    #         self.logger.exception(e)
-    #         return None
-
-    # def merge_update_city(self, new_city_list, old_city_list):
-    #     final_result = []
-    #     old_city = {x['city']: x for x in old_city_list}
-    #     new_city = {x['city']: x for x in new_city_list}
-
-    #     for city in new_city_list:
-    #         if city['city'] in old_city:
-    #             city['n_confirm'] += old_city[city['city']]['n_confirm']
-    #             city['n_suspect'] += old_city[city['city']]['n_suspect']
-    #             city['n_dead'] += old_city[city['city']]['n_dead']
-    #             city['n_heal'] += old_city[city['city']]['n_heal']
-    #             final_result.append(city)
-    #         else:
-    #             final_result.append(city)
-
-    #     for city in old_city_list:
-    #         if city['city'] not in new_city:
-    #             final_result.append(city)
-    #     return final_result
-
-    # def get_state_all(self):
-    #     """
-    #     获取全国数据
-    #     :return:
-    #     """
-    #     res = self.req.get(url=DATA_URL, params=REGION_PARAM, headers=REQUEST_HEADERS)
-    #     if res.status_code != 200:
-    #         self.logger.error("获取全国数据失败")
-    #     data = json.loads(json.loads(res.content.decode("utf-8"))['data'])[0]
-    #     state_dict = {}
-    #     state_dict['confirm'] = data['confirmCount']
-    #     state_dict['dead'] = data['deadCount']
-    #     state_dict['heal'] = data['cure']
-    #     state_dict['suspect'] = data['suspectCount']
-    #     state_dict['area'] = '全国'
-    #     state_dict['country'] = '全国'
-    #     state_dict['city'] = '全国'
-    #     return {'全国': state_dict}
 
     def get_raw_realtime_data(self):
         '''从腾讯新闻获取各地疫情的原始实时数据'''
@@ -206,6 +145,59 @@ class TXSpider():
     def check_whether_update(self, area):
         '''检查是否有数据更新（新旧数据之差是否大于0）'''
         return sum((area['n_confirm'], area['n_suspect'], area['n_dead'], area['n_heal'])) > 0
+
+    # def get_old_data_city(self):
+    #     try:
+    #         if USE_REDIS:
+    #             old_update_city = json.loads(self.re.get(UPDATE_CITY))
+    #         else:
+    #             file = os.path.join(DATA_DIR, UPDATE_CITY + ".json")
+    #             with open(file, 'r', encoding='utf-8') as r:
+    #                 old_update_city = json.load(r)
+    #         return old_update_city
+    #     except Exception as e:
+    #         self.logger.error("Error: failed to load old update city")
+    #         self.logger.exception(e)
+    #         return None
+
+    # def merge_update_city(self, new_city_list, old_city_list):
+    #     final_result = []
+    #     old_city = {x['city']: x for x in old_city_list}
+    #     new_city = {x['city']: x for x in new_city_list}
+
+    #     for city in new_city_list:
+    #         if city['city'] in old_city:
+    #             city['n_confirm'] += old_city[city['city']]['n_confirm']
+    #             city['n_suspect'] += old_city[city['city']]['n_suspect']
+    #             city['n_dead'] += old_city[city['city']]['n_dead']
+    #             city['n_heal'] += old_city[city['city']]['n_heal']
+    #             final_result.append(city)
+    #         else:
+    #             final_result.append(city)
+
+    #     for city in old_city_list:
+    #         if city['city'] not in new_city:
+    #             final_result.append(city)
+    #     return final_result
+
+    # def get_state_all(self):
+    #     """
+    #     获取全国数据
+    #     :return:
+    #     """
+    #     res = self.req.get(url=DATA_URL, params=REGION_PARAM, headers=REQUEST_HEADERS)
+    #     if res.status_code != 200:
+    #         self.logger.error("获取全国数据失败")
+    #     data = json.loads(json.loads(res.content.decode("utf-8"))['data'])[0]
+    #     state_dict = {}
+    #     state_dict['confirm'] = data['confirmCount']
+    #     state_dict['dead'] = data['deadCount']
+    #     state_dict['heal'] = data['cure']
+    #     state_dict['suspect'] = data['suspectCount']
+    #     state_dict['area'] = '全国'
+    #     state_dict['country'] = '全国'
+    #     state_dict['city'] = '全国'
+    #     return {'全国': state_dict}
 
 
 if __name__=='__main__':
