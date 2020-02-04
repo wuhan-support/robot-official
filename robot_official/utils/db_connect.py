@@ -147,7 +147,6 @@ class RedisConnect:
 
     def get_all_areas(self):
         '''返回目前数据库中所有的地区名称'''
-        # return self.r.keys('*')
         return self.r.smembers('all_areas')
 
     def save_area(self, abbr, suffix, parent):
