@@ -15,7 +15,9 @@ app_config = Config(
     APP_ID=APP_ID,
     APP_SECRET=APP_SECRET,
     TOKEN=TOKEN,
-    ENCODING_AES_KEY=ENCODING_AES_KEY
+    ENCODING_AES_KEY=ENCODING_AES_KEY,
+    SERVER='auto',
+    SESSION_STORAGE=None,
 )
 app = WeRoBot(config=app_config) # logger=logger
 logger.info('初始化 WeRoBot 完成')
