@@ -1,4 +1,5 @@
 from werobot import WeRoBot
+from werobot.config import Config
 
 from .config import ROBOT_HOST, ROBOT_PORT, APP_ID, APP_SECRET, TOKEN, ENCODING_AES_KEY, DATABASE
 from .utils.log import Logger
@@ -8,15 +9,14 @@ from .utils.robot_msg import is_subscribe_msg, is_unsubscribe_msg
 
 logger = Logger('robot')
 
-app_config = {
-    'SERVER': 'auto',
-    'HOST': ROBOT_HOST,
-    'PORT': ROBOT_PORT,
-    'APP_ID': APP_ID,
-    'APP_SECRET': APP_SECRET,
-    'TOKEN': TOKEN,
-    'ENCODING_AES_KEY': ENCODING_AES_KEY
-}
+app_config = Config(
+    HOST=ROBOT_HOST,
+    PORT=ROBOT_PORT,
+    APP_ID=APP_ID,
+    APP_SECRET=APP_SECRET,
+    TOKEN=TOKEN,
+    ENCODING_AES_KEY=ENCODING_AES_KEY
+)
 app = WeRoBot(config=app_config) # logger=logger
 logger.info('初始化 WeRoBot 完成')
 
