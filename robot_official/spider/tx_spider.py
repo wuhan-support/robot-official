@@ -31,10 +31,6 @@ class TXSpider():
         
         DATA_DIR.mkdir(exist_ok=True)
 
-    # def check_dirs(self):
-    #     check_dir_exist(DATA_DIR)
-    #     check_dir_exist(os.path.join(os.path.join(BASE_DIR, "download_image")))
-
     def main(self):
         try:
             self.logger.info('开始爬取疫情数据')
@@ -42,11 +38,6 @@ class TXSpider():
             latest_data = self.process_raw_data(raw_data['areaTree'])
             # 腾讯 areaTree 中的全国数据与 chinaTotal 不一致，以 chinaTotal 为准
             latest_data['全国'].update(raw_data['chinaTotal'])
-            # chinaTotal = data['chinaTotal']
-            # latest_data['全国']['confirm'] = int(chinaTotal['confirm'])
-            # latest_data['全国']['suspect'] = int(chinaTotal['suspect'])
-            # latest_data['全国']['dead'] = int(chinaTotal['dead'])
-            # latest_data['全国']['heal'] = int(chinaTotal['heal'])
 
             # 计算该数据与上一次数据之差
             previous_data = load_stored_data()
@@ -78,39 +69,39 @@ class TXSpider():
         except Exception as e:
             self.logger.exception(e)
 
-    def get_old_data_city(self):
-        try:
-            if USE_REDIS:
-                old_update_city = json.loads(self.re.get(UPDATE_CITY))
-            else:
-                file = os.path.join(DATA_DIR, UPDATE_CITY + ".json")
-                with open(file, 'r', encoding='utf-8') as r:
-                    old_update_city = json.load(r)
-            return old_update_city
-        except Exception as e:
-            self.logger.error("Error: failed to load old update city")
-            self.logger.exception(e)
-            return None
+    # def get_old_data_city(self):
+    #     try:
+    #         if USE_REDIS:
+    #             old_update_city = json.loads(self.re.get(UPDATE_CITY))
+    #         else:
+    #             file = os.path.join(DATA_DIR, UPDATE_CITY + ".json")
+    #             with open(file, 'r', encoding='utf-8') as r:
+    #                 old_update_city = json.load(r)
+    #         return old_update_city
+    #     except Exception as e:
+    #         self.logger.error("Error: failed to load old update city")
+    #         self.logger.exception(e)
+    #         return None
 
-    def merge_update_city(self, new_city_list, old_city_list):
-        final_result = []
-        old_city = {x['city']: x for x in old_city_list}
-        new_city = {x['city']: x for x in new_city_list}
+    # def merge_update_city(self, new_city_list, old_city_list):
+    #     final_result = []
+    #     old_city = {x['city']: x for x in old_city_list}
+    #     new_city = {x['city']: x for x in new_city_list}
 
-        for city in new_city_list:
-            if city['city'] in old_city:
-                city['n_confirm'] += old_city[city['city']]['n_confirm']
-                city['n_suspect'] += old_city[city['city']]['n_suspect']
-                city['n_dead'] += old_city[city['city']]['n_dead']
-                city['n_heal'] += old_city[city['city']]['n_heal']
-                final_result.append(city)
-            else:
-                final_result.append(city)
+    #     for city in new_city_list:
+    #         if city['city'] in old_city:
+    #             city['n_confirm'] += old_city[city['city']]['n_confirm']
+    #             city['n_suspect'] += old_city[city['city']]['n_suspect']
+    #             city['n_dead'] += old_city[city['city']]['n_dead']
+    #             city['n_heal'] += old_city[city['city']]['n_heal']
+    #             final_result.append(city)
+    #         else:
+    #             final_result.append(city)
 
-        for city in old_city_list:
-            if city['city'] not in new_city:
-                final_result.append(city)
-        return final_result
+    #     for city in old_city_list:
+    #         if city['city'] not in new_city:
+    #             final_result.append(city)
+    #     return final_result
 
     # def get_state_all(self):
     #     """
@@ -170,16 +161,6 @@ class TXSpider():
                 data_dict.update(self.process_raw_data(area['children'], area_key))
         return data_dict
 
-    # def fill_unknow(self, data):
-    #     for item in data:
-    #         if 'city' not in item or item['city'] == '':
-    #             if 'area' not in item or item['area'] == '':
-    #                 item['city'] = item['country']
-    #                 item['area'] = item['country']
-    #             else:
-    #                 item['city'] = item['area']
-    #     return data
-
     def save_all_areas(self, data_dict):
         '''保存所有地区的名称，供分词用'''
         all_area = set(data_dict.keys())
@@ -195,7 +176,8 @@ class TXSpider():
                 abbr, suffix = match.groups()
             if len(abbr) < 2:
                 # 不存在单字的地区名称
-                continue
+                abbr = area
+                suffix = ''
             parent = data_dict[area]['parent']
             self.db.save_area(abbr, suffix, parent)
 
