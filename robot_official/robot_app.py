@@ -46,6 +46,7 @@ def reply_text(message):
     if is_subscribe:
         if not target:
             return '请输入地区名称（如：订阅武汉）。'
+        target = {'中国': '全国'}.get(target, target)
 
         code, sub_area_name = db.save_subscription(wechat_id, target)
         if code != -1:
@@ -57,8 +58,9 @@ def reply_text(message):
     if is_unsubscribe:
         if not target:
             return '请输入地区名称（如：取消订阅武汉）。'
+        target = {'中国': '全国'}.get(target, target)
         
-        code, sub_area_name = db.save_subscription(wechat_id, target)
+        code, sub_area_name = db.cancel_subscription(wechat_id, target)
         if code != -1:
             return '成功取消{}的疫情信息订阅。'.format(sub_area_name)
         else:
