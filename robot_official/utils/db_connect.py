@@ -138,6 +138,7 @@ class RedisConnect:
 
     def __init__(self, host=REDIS_HOST, port=REDIS_PORT, password=None):
         self.r = redis.Redis(host=host, port=port, decode_responses=True, password=password)
+        logger.info('数据库表初始化完成')
 
     def get_all_areas(self):
         '''返回目前数据库中所有的地区名称'''
@@ -191,8 +192,12 @@ class RedisConnect:
 def get_area_display_name(area):
     '''返回一个用户友好的地区名称，包含其父地区（除非是中国）'''
     # 两种不同的area会被传入，需要分开处理
-    parent = area.get('parent') or area.parent
-    name = area.get('name') or area.name
+    try:
+        parent = area.get('parent') or area.parent
+        name = area.get('name') or area.name
+    except Exception as e:
+        logger.warning('无法获取地区用户友好名称：{}'.format(area))
+        logger.exception(e)
     area_display_name = '' if parent in ('全国', '中国') else parent
     area_display_name += name
     return area_display_name
