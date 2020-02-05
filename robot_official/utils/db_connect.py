@@ -194,7 +194,7 @@ def get_area_display_name(area):
     # 两种不同的area会被传入，需要分开处理
     try:
         parent = area.get('parent', '')
-        name = area.get('name', '')
+        name = area.get('area', '')
         if not parent and not name:
             logger.warning('无法获取地区用户友好名称：{}'.format(area))
     except Exception as e:
