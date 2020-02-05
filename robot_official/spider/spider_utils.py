@@ -26,7 +26,11 @@ def get_should_update():
 
 def remove_update():
     '''删除存储的地区数据更新'''
-    updates_file.unlink(missing_ok=True)
+    try:
+        updates_file.unlink()
+    except FileNotFoundError:
+        # Python 3.6 暂不支持 missing_ok
+        pass
 
 def set_update(data):
     '''存储有更新的地区数据'''
