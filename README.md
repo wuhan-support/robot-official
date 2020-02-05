@@ -17,8 +17,7 @@
 
 ## 效果演示
 
-![订阅演示 1](./assets/images/subscription-demo-1.jpg)
-![订阅演示 2](./assets/images/subscription-demo-2.jpg)
+![订阅演示](./assets/images/subscription-demo.jpg)
 
 
 ## 安装及部署
