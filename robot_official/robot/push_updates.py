@@ -5,7 +5,7 @@ from werobot.client import Client
 
 from ..config import APP_ID, APP_SECRET, TEMPLATE_ID, DATABASE, DATA_DIR, UPDATES_FILENAME
 from ..utils.log import Logger
-from ..utils.db_connect import RedisConnect, SQLiteConnect
+from ..utils.db_connect import RedisConnect, SQLiteConnect, get_area_display_name
 from ..spider.spider_utils import get_should_update, remove_update
 
 
@@ -56,7 +56,7 @@ class PushUpdatesClient:
 
             template_data = {
                 'area': {
-                    'value': self.db.get_area_display_name(area),
+                    'value': get_area_display_name(area),
                     'color': '#2980b9'
                 },
                 'update': {

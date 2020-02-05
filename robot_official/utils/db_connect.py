@@ -73,12 +73,6 @@ class SQLiteConnect:
             # 未找到地区名
             return []
         return results
-    
-    def get_area_display_name(self, area):
-        '''返回一个用户友好的地区名称，包含其父地区（除非是中国）'''
-        area_display_name = '' if area.parent in ('全国', '中国') else area.parent
-        area_display_name += area.name
-        return area_display_name
 
     def save_subscription(self, uid, target):
         '''保存一个用户对于指定地区的订阅，并返回返回码及地区显示名称'''
@@ -89,7 +83,7 @@ class SQLiteConnect:
             area = areas[0] # TODO: 处理多个匹配
         else:
             area = areas[0]
-        area_display_name = self.get_area_display_name(area)
+        area_display_name = get_area_display_name(area)
 
         # 插入数据
         # TODO: 检查是否已经存在该订阅
@@ -106,7 +100,7 @@ class SQLiteConnect:
         elif len(areas) > 1:
             areas = [areas[0]] # TODO: 处理多个匹配
         area = areas[0]
-        area_display_name = self.get_area_display_name(area)
+        area_display_name = get_area_display_name(area)
 
         # 删除数据
         try:
@@ -166,18 +160,12 @@ class RedisConnect:
         # TODO: 处理重名情况
         return self.r.hgetall('area:{}'.format(target))
 
-    def get_area_display_name(self, area):
-        '''返回一个用户友好的地区名称，包含其父地区（除非是中国）'''
-        area_display_name = '' if area['parent'] in ('全国', '中国') else area['parent']
-        area_display_name += area['name']
-        return area_display_name
-
     def save_subscription(self, uid, target):
         '''保存一个用户对于指定地区的订阅，并返回返回码及地区显示名称'''
         area = self._match_target_to_area(target)
         if not area:
             return -1, ''
-        area_display_name = self.get_area_display_name(area)
+        area_display_name = get_area_display_name(area)
         self.r.sadd('sub:{}'.format(area['name']), uid)
 
         return 0, area_display_name
@@ -187,7 +175,7 @@ class RedisConnect:
         area = self._match_target_to_area(target)
         if not area:
             return -1, ''
-        area_display_name = self.get_area_display_name(area)
+        area_display_name = get_area_display_name(area)
         self.r.srem('sub:{}'.format(area['name']), uid)
 
         return 0, area_display_name
@@ -198,3 +186,13 @@ class RedisConnect:
         if not area:
             return []
         return self.r.smembers('sub:{}'.format(area['name']))
+
+
+def get_area_display_name(area):
+    '''返回一个用户友好的地区名称，包含其父地区（除非是中国）'''
+    # 两种不同的area会被传入，需要分开处理
+    parent = area.get('parent') or area.parent
+    name = area.get('name') or area.name
+    area_display_name = '' if parent in ('全国', '中国') else parent
+    area_display_name += name
+    return area_display_name
