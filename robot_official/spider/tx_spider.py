@@ -42,7 +42,6 @@ class TXSpider():
 
             # 如果数据有更新，则保存新数据和更新的数据
             if len(updated_areas) > 0:
-                store_data(updated_areas) # 存储最新数据至JSON
                 if get_should_update():
                     # TODO: 如果上一次的数据更新还未推送，要合并新增数据
                     # old_update_city = self.get_old_data_city()
