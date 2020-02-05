@@ -28,15 +28,15 @@ class PushUpdatesClient:
 
     def parse_update_into_message(self, area):
         msg = '新增'
-        msg += '确诊 {} 例'.format(area['n_confirm']) if area['n_confirm'] != 0 else ''
-        msg += '疑似 {} 例'.format(area['n_suspect']) if area['n_suspect'] != 0 else ''
-        msg += '死亡 {} 例'.format(area['n_dead']) if area['n_dead'] != 0 else ''
-        msg += '治愈 {} 例'.format(area['n_heal']) if area['n_heal'] != 0 else ''
-        msg += '\n'
+        msg += '确诊 {} 例、'.format(area['n_confirm']) if area['n_confirm'] != 0 else ''
+        msg += '疑似 {} 例、'.format(area['n_suspect']) if area['n_suspect'] != 0 else ''
+        msg += '死亡 {} 例、'.format(area['n_dead']) if area['n_dead'] != 0 else ''
+        msg += '治愈 {} 例、'.format(area['n_heal']) if area['n_heal'] != 0 else ''
+        msg = msg.rstrip('、') + '。\n'
         msg += '截至目前总计'
-        msg += '确诊 {} 例'.format(area['confirm'])
-        msg += '死亡 {} 例'.format(area['dead'])
-        msg += '治愈 {} 例'.format(area['heal'])
+        msg += '确诊 {} 例、'.format(area['confirm'])
+        msg += '死亡 {} 例、'.format(area['dead'])
+        msg += '治愈 {} 例。'.format(area['heal'])
         return '\n{}\n'.format(msg)
 
     def main(self):
