@@ -1,10 +1,10 @@
-# 微信公众号疫情信息小助手（非官方）
+# 微信公众号/服务号疫情信息小助手（非官方）
 
 > *疫情信息小助手**个人版本**已完成开发，请参见 [robot-personal](https://github.com/wuhan-support/robot-personal)。*
 
 
 ## 项目目的
-该项目还在进行中并且需要您的帮助，我们希望能让所有人都成为传播疫情信息自的媒体。您若赋闲在家并拥有自己的公众号/服务号，不妨传播消息更传播爱。
+该项目还在进行中并且需要您的帮助，我们希望能让所有人都成为传播疫情信息的自媒体。您若赋闲在家并拥有自己的公众号/服务号，不妨传播消息更传播爱。
 
 
 ## 实现功能
@@ -80,8 +80,9 @@ server {
 
 8. 创建环境（这里以 Conda 为例）并安装依赖：
 ```shell
-conda create -n wuhan python=3.6 werobot redis sqlalchemy requests
+conda create -n wuhan python=3.6 redis sqlalchemy requests
 source activate wuhan
+pip install werobot
 ```
 
 9. 运行机器人：
@@ -92,6 +93,6 @@ nohup python start.py &
 
 ## 计划
 - [x] 与疫情数据接入
-- [ ] 其他信息（人工收集，[详情参考](http://feiyan.help)）
+- [ ] 其他信息（人工收集，[参考这里](http://feiyan.help)）
 - [ ] 其他信息（爬虫收集）
 - [ ] 支持公众号（没有模板消息）
