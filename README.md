@@ -82,7 +82,7 @@ server {
 ```shell
 conda create -n wuhan python=3.6 redis sqlalchemy requests
 source activate wuhan
-pip install werobot
+pip install werobot schedule
 ```
 
 9. 运行机器人：
