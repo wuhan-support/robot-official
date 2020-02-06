@@ -1,5 +1,3 @@
-import threading
-
 import redis
 import sqlalchemy as sql
 
@@ -10,21 +8,7 @@ from ..config import SQLITE_FILE, REDIS_HOST, REDIS_PORT
 logger = Logger('db')
 
 
-class SingletonMixin:
-    '''线程安全的单例模式实现'''
-
-    __singleton_lock = threading.Lock()
-    __singleton_instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls.__singleton_instance:
-            with cls.__singleton_lock:
-                if not cls.__singleton_instance:
-                    cls.__singleton_instance = object.__new__(cls, *args, **kwargs)
-        return cls.__singleton_instance
-
-
-class SQLiteConnect(SingletonMixin):
+class SQLiteConnect:
     '''SQLite 数据库接口封装类'''
 
     def __init__(self, db_file=SQLITE_FILE):
@@ -32,8 +16,6 @@ class SQLiteConnect(SingletonMixin):
         # 这个操作会引起SQLite多线程错误警告
         # 我暂时性使用了忽略警告的办法，但是这不是一个优雅的甚至不是好的解决方法
         # 未来需要更好的解决方法
-
-        # 此外要注意，由于单例模式，目前这个类不支持多个实例对应不同存储位置
         self.engine = sql.create_engine('sqlite:///{}'.format(db_file), connect_args={'check_same_thread': False})
         self.conn = self.engine.connect()
         self.metadata = sql.MetaData()
