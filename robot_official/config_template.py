@@ -14,7 +14,7 @@ ROBOT_HOST = '127.0.0.1' # 默认: '127.0.0.1'
 ROBOT_PORT = 8000 # 默认: 8000
 
 # 数据库选择
-DATABASE = 'sqlite' # 目前只支持 sqlite 或 redis
+DATABASE = 'sqlite' # 目前只支持 'sqlite' 或 'redis'
 
 # Redis 服务器
 REDIS_HOST = 'localhost' # 默认: 'localhost'
@@ -29,4 +29,4 @@ DATA_ALL_FILENAME = 'latest.json' # 存储所有数据的文件名
 UPDATES_FILENAME = 'updates.json' # 存储任何待推送的更新的文件名
 
 # 更新间隔
-UPDATE_INTERVAL = 60 * 5 # 秒
+UPDATE_INTERVAL = 10 # 分钟
