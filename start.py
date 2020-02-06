@@ -18,6 +18,7 @@ schedule.every(UPDATE_INTERVAL + 1).minutes.do(push_client.main)
 
 Thread(target=start_app).start()
 
+schedule.run_all()
 while True:
     schedule.run_pending()
     time.sleep(1)
